@@ -1,9 +1,13 @@
 <resources>
-    <string name="app_name">Stout</string>
+    <string name="app_name">AlcohDex</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
     <string name="beer_list_empty">You haven\'t added any beers!</string>
+    <string name="dateLabel">Date</string>
+    <string name="breweryLabel">Brewery</string>
+    <string name="beerNameLabel">Beer Name</string>
+    <string name="beer_image_content_desc">Beer Image</string>
 </resources>

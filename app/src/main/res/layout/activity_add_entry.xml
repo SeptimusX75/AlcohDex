@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?><!--suppress XmlUnusedNamespaceDeclaration -->
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="Object" />
+
+        <variable
+            name="presenter"
+            type="Object" />
+    </data>
+
+    <!-- Root layout here -->
+    <FrameLayout
+        android:id="@+id/fragmentTarget"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</layout>
