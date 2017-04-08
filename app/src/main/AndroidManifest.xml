@@ -20,7 +20,7 @@
         </activity>
 
         <activity
-            android:name=".entries.AddEntryActivity"
+            android:name=".feature.entries.AddEntryActivity"
             android:label="New Entry"
             android:parentActivityName=".HomeActivity"
             android:windowSoftInputMode="adjustPan" />

@@ -1,4 +1,4 @@
-package io.memetic.alcohdex.entries;
+package io.memetic.alcohdex.feature.entries;
 
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -6,8 +6,11 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
+import java.util.UUID;
+
 import io.memetic.alcohdex.R;
 import io.memetic.alcohdex.databinding.ActivityAddEntryBinding;
+import io.memetic.alcohdex.feature.entries.model.BeerEntry;
 
 /**
  * TODO class description
@@ -30,7 +33,7 @@ public class AddEntryActivity extends AppCompatActivity {
         }
         if (savedInstanceState == null) {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            fragment = new AddEntryFragment();
+            fragment = AddEntryFragment.newInstance(new BeerEntry(UUID.randomUUID()));
             transaction.add(binding.fragmentTarget.getId(), fragment, TAG_ADD_ENTRY_FRAGMENT);
             transaction.commit();
         }

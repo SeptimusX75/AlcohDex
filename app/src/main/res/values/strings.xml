@@ -10,4 +10,5 @@
     <string name="breweryLabel">Brewery</string>
     <string name="beerNameLabel">Beer Name</string>
     <string name="beer_image_content_desc">Beer Image</string>
+    <string name="menu_done">Done</string>
 </resources>

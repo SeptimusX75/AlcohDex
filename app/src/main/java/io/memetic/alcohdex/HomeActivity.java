@@ -8,15 +8,27 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import io.memetic.alcohdex.entries.AddEntryActivity;
+import com.airbnb.epoxy.SimpleEpoxyAdapter;
+
+import java.util.Collection;
+
+import io.memetic.alcohdex.data.EntryRepository;
+import io.memetic.alcohdex.feature.entries.AddEntryActivity;
+import io.memetic.alcohdex.feature.entries.model.BeerEntry;
+import io.memetic.alcohdex.feature.entries.model.BeerListEntryBinder;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private RecyclerView mRecyclerView;
+    private SimpleEpoxyAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +59,21 @@ public class HomeActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(
                 R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mAdapter = new SimpleEpoxyAdapter();
+        mRecyclerView.setAdapter(mAdapter);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Collection<BeerEntry> entries = EntryRepository.getInstance().getEntries();
+        for (BeerEntry entry : entries) {
+            mAdapter.addModels(new BeerListEntryBinder(entry));
+        }
+        mAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -54,8 +81,7 @@ public class HomeActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        }
-        else {
+        } else {
             super.onBackPressed();
         }
     }
@@ -90,20 +116,15 @@ public class HomeActivity extends AppCompatActivity
 
         if (id == R.id.nav_camera) {
             // Handle the camera action
-        }
-        else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.nav_gallery) {
 
-        }
-        else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.nav_slideshow) {
 
-        }
-        else if (id == R.id.nav_manage) {
+        } else if (id == R.id.nav_manage) {
 
-        }
-        else if (id == R.id.nav_share) {
+        } else if (id == R.id.nav_share) {
 
-        }
-        else if (id == R.id.nav_send) {
+        } else if (id == R.id.nav_send) {
 
         }
 
