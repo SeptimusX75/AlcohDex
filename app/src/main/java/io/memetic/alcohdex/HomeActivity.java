@@ -22,6 +22,8 @@ import com.airbnb.epoxy.SimpleEpoxyAdapter;
 
 import java.util.Collection;
 
+import javax.inject.Inject;
+
 import io.memetic.alcohdex.data.EntryRepository;
 import io.memetic.alcohdex.databinding.ActivityHomeBinding;
 import io.memetic.alcohdex.feature.entries.AddEntryActivity;
@@ -30,6 +32,8 @@ import io.memetic.alcohdex.feature.entries.model.BeerListEntryBinder;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    @Inject
+    EntryRepository mRepository;
 
     private RecyclerView mRecyclerView;
     private SimpleEpoxyAdapter mAdapter;
@@ -75,6 +79,7 @@ public class HomeActivity extends AppCompatActivity
         mRecyclerView.addItemDecoration(decoration);
 
         mEmptyListTextView = mBinding.appBarHomeBinding.contentHomeBinding.emptyListTextView;
+        ((App) getApplication()).getComponentRegistry().repoComponent.inject(this);
     }
 
     @Override
@@ -82,7 +87,7 @@ public class HomeActivity extends AppCompatActivity
         super.onResume();
         mAdapter.removeAllModels();
 
-        Collection<BeerEntry> entries = EntryRepository.getInstance().getEntries();
+        Collection<BeerEntry> entries = mRepository.getEntries();
         boolean noEntries = entries.isEmpty();
         mEmptyListTextView.setVisibility(
                 noEntries ? View.VISIBLE : View.GONE

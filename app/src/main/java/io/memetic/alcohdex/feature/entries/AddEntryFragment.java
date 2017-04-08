@@ -11,6 +11,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import javax.inject.Inject;
+
+import io.memetic.alcohdex.App;
 import io.memetic.alcohdex.R;
 import io.memetic.alcohdex.data.EntryRepository;
 import io.memetic.alcohdex.databinding.FragmentAddEntryBinding;
@@ -24,10 +27,12 @@ import io.memetic.alcohdex.feature.entries.model.BeerEntry;
  */
 public class AddEntryFragment extends Fragment {
 
+    @Inject
+    EntryRepository mRepository;
+
     public static final String KEY_ENTRY = "key_entry";
     private FragmentAddEntryBinding binding;
     private BeerEntry mEntry;
-    private EntryRepository mRepository;
 
     public static AddEntryFragment newInstance(BeerEntry entry) {
         Bundle args = new Bundle();
@@ -38,11 +43,16 @@ public class AddEntryFragment extends Fragment {
         return fragment;
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        ((App) getActivity().getApplication()).getComponentRegistry().repoComponent.inject(this);
+        super.onCreate(savedInstanceState);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         setHasOptionsMenu(true);
-        mRepository = EntryRepository.getInstance();
 
         mEntry = getArguments().getParcelable(KEY_ENTRY);
 
