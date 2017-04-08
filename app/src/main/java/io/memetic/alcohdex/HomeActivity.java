@@ -48,16 +48,14 @@ public class HomeActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = mBinding.appBarHomeBinding.fab;
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(HomeActivity.this, AddEntryActivity.class);
-                startActivity(intent);
-                //                Snackbar.make(view, "Replace with your own action",
-                //                        Snackbar.LENGTH_LONG)
-                //                        .setAction("Action", null).show();
-            }
+        fab.setOnClickListener((view) -> {
+            Intent intent = new Intent(HomeActivity.this, AddEntryActivity.class);
+            startActivity(intent);
         });
+
+        //                Snackbar.make(view, "Replace with your own action",
+        //                        Snackbar.LENGTH_LONG)
+        //                        .setAction("Action", null).show();
 
         DrawerLayout drawer = mBinding.drawerLayout;
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
