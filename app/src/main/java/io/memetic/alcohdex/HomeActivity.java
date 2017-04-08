@@ -1,6 +1,7 @@
 package io.memetic.alcohdex;
 
 import android.content.Intent;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -8,18 +9,21 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.airbnb.epoxy.SimpleEpoxyAdapter;
 
 import java.util.Collection;
 
 import io.memetic.alcohdex.data.EntryRepository;
+import io.memetic.alcohdex.databinding.ActivityHomeBinding;
 import io.memetic.alcohdex.feature.entries.AddEntryActivity;
 import io.memetic.alcohdex.feature.entries.model.BeerEntry;
 import io.memetic.alcohdex.feature.entries.model.BeerListEntryBinder;
@@ -29,15 +33,17 @@ public class HomeActivity extends AppCompatActivity
 
     private RecyclerView mRecyclerView;
     private SimpleEpoxyAdapter mAdapter;
+    private ActivityHomeBinding mBinding;
+    private TextView mEmptyListTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_home);
+        Toolbar toolbar = mBinding.appBarHomeBinding.toolbar;
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = mBinding.appBarHomeBinding.fab;
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -49,27 +55,41 @@ public class HomeActivity extends AppCompatActivity
             }
         });
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = mBinding.drawerLayout;
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open,
                 R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(
-                R.id.nav_view);
+        NavigationView navigationView = mBinding.navView;
         navigationView.setNavigationItemSelectedListener(this);
 
-        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mAdapter = new SimpleEpoxyAdapter();
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        DividerItemDecoration decoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
+
+        mRecyclerView = mBinding.appBarHomeBinding.contentHomeBinding.recyclerView;
         mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.setLayoutManager(layoutManager);
+        mRecyclerView.addItemDecoration(decoration);
+
+        mEmptyListTextView = mBinding.appBarHomeBinding.contentHomeBinding.emptyListTextView;
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        mAdapter.removeAllModels();
+
         Collection<BeerEntry> entries = EntryRepository.getInstance().getEntries();
+        boolean noEntries = entries.isEmpty();
+        mEmptyListTextView.setVisibility(
+                noEntries ? View.VISIBLE : View.GONE
+        );
+
+        if (noEntries) return;
+
         for (BeerEntry entry : entries) {
             mAdapter.addModels(new BeerListEntryBinder(entry));
         }
