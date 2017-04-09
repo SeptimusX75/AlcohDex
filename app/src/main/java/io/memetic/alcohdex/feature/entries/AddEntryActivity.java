@@ -41,5 +41,4 @@ public class AddEntryActivity extends AppCompatActivity {
             fragment = (AddEntryFragment) getSupportFragmentManager().findFragmentByTag(TAG_ADD_ENTRY_FRAGMENT);
         }
     }
-
 }

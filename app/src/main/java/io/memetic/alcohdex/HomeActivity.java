@@ -13,28 +13,32 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.TextView;
 
 import com.airbnb.epoxy.SimpleEpoxyAdapter;
-
-import java.util.Collection;
 
 import javax.inject.Inject;
 
 import io.memetic.alcohdex.data.EntryRepository;
 import io.memetic.alcohdex.databinding.ActivityHomeBinding;
 import io.memetic.alcohdex.feature.entries.AddEntryActivity;
-import io.memetic.alcohdex.feature.entries.model.BeerEntry;
 import io.memetic.alcohdex.feature.entries.model.BeerListEntryBinder;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+
+import static android.support.v7.widget.DividerItemDecoration.VERTICAL;
+import static io.reactivex.android.schedulers.AndroidSchedulers.mainThread;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     @Inject
     EntryRepository mRepository;
 
+    private CompositeDisposable mCompositeDisposable = new CompositeDisposable();
     private RecyclerView mRecyclerView;
     private SimpleEpoxyAdapter mAdapter;
     private ActivityHomeBinding mBinding;
@@ -69,7 +73,7 @@ public class HomeActivity extends AppCompatActivity
 
         mAdapter = new SimpleEpoxyAdapter();
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        DividerItemDecoration decoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
+        DividerItemDecoration decoration = new DividerItemDecoration(this, VERTICAL);
 
         mRecyclerView = mBinding.appBarHomeBinding.contentHomeBinding.recyclerView;
         mRecyclerView.setAdapter(mAdapter);
@@ -78,25 +82,21 @@ public class HomeActivity extends AppCompatActivity
 
         mEmptyListTextView = mBinding.appBarHomeBinding.contentHomeBinding.emptyListTextView;
         ((App) getApplication()).getComponentRegistry().repoComponent.inject(this);
+
+        Disposable disposable = mRepository.getEntryObservable().subscribeOn(Schedulers.io())
+                .observeOn(mainThread())
+                .subscribe(beerEntry -> {
+                    mAdapter.addModels(new BeerListEntryBinder(beerEntry));
+                    mAdapter.notifyDataSetChanged();
+                    Log.i("Adapter:", "Count is " + mAdapter.getItemCount());
+                });
+        mCompositeDisposable.add(disposable);
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        mAdapter.removeAllModels();
-
-        Collection<BeerEntry> entries = mRepository.getEntries();
-        boolean noEntries = entries.isEmpty();
-        mEmptyListTextView.setVisibility(
-                noEntries ? View.VISIBLE : View.GONE
-        );
-
-        if (noEntries) return;
-
-        for (BeerEntry entry : entries) {
-            mAdapter.addModels(new BeerListEntryBinder(entry));
-        }
-        mAdapter.notifyDataSetChanged();
+    protected void onDestroy() {
+        mCompositeDisposable.dispose();
+        super.onDestroy();
     }
 
     @Override
