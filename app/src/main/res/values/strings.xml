@@ -11,4 +11,5 @@
     <string name="beerNameLabel">Beer Name</string>
     <string name="beer_image_content_desc">Beer Image</string>
     <string name="menu_done">Done</string>
+    <string name="preference_file_key">io.memetic.alcohdex.PREFERENCE_FILE_KEY</string>
 </resources>

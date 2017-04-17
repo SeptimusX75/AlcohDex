@@ -3,6 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
+
+        <variable
+            name="viewModel"
+            type="io.memetic.alcohdex.HomeViewModel" />
+    </data>
+
+
     <android.support.v4.widget.DrawerLayout
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
@@ -11,6 +19,7 @@
         tools:openDrawer="start">
 
         <include
+            app:viewModel="@{viewModel}"
             android:id="@+id/appBarHomeBinding"
             layout="@layout/app_bar_home"
             android:layout_width="match_parent"

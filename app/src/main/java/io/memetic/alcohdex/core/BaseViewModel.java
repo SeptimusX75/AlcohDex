@@ -1,7 +1,11 @@
 package io.memetic.alcohdex.core;
 
+import android.content.res.Resources;
 import android.databinding.BaseObservable;
 
+import javax.inject.Inject;
+
+import io.memetic.alcohdex.ComponentRegistry;
 import io.memetic.alcohdex.core.interfaces.ViewModel;
 
 /**
@@ -11,4 +15,10 @@ import io.memetic.alcohdex.core.interfaces.ViewModel;
  *         4/7/17
  */
 public abstract class BaseViewModel extends BaseObservable implements ViewModel {
+    @Inject
+    Resources mResources;
+
+    {
+        ComponentRegistry.getInstance().getAppComponent().inject(this);
+    }
 }

@@ -13,7 +13,6 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -43,11 +42,14 @@ public class HomeActivity extends AppCompatActivity
     private SimpleEpoxyAdapter mAdapter;
     private ActivityHomeBinding mBinding;
     private TextView mEmptyListTextView;
+    private HomeViewModel mHomeViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mHomeViewModel = new HomeViewModel();
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_home);
+        mBinding.setViewModel(mHomeViewModel);
         Toolbar toolbar = mBinding.appBarHomeBinding.toolbar;
         setSupportActionBar(toolbar);
 
@@ -81,14 +83,15 @@ public class HomeActivity extends AppCompatActivity
         mRecyclerView.addItemDecoration(decoration);
 
         mEmptyListTextView = mBinding.appBarHomeBinding.contentHomeBinding.emptyListTextView;
-        ((App) getApplication()).getComponentRegistry().repoComponent.inject(this);
+        ComponentRegistry.getInstance().getAppComponent().inject(this);
 
         Disposable disposable = mRepository.getEntryObservable().subscribeOn(Schedulers.io())
                 .observeOn(mainThread())
                 .subscribe(beerEntry -> {
                     mAdapter.addModels(new BeerListEntryBinder(beerEntry));
                     mAdapter.notifyDataSetChanged();
-                    Log.i("Adapter:", "Count is " + mAdapter.getItemCount());
+
+                    mHomeViewModel.setEntryAvailable(!mAdapter.isEmpty());
                 });
         mCompositeDisposable.add(disposable);
     }
@@ -97,6 +100,12 @@ public class HomeActivity extends AppCompatActivity
     protected void onDestroy() {
         mCompositeDisposable.dispose();
         super.onDestroy();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mHomeViewModel.setEntryAvailable(!mRepository.getEntries().isEmpty());
     }
 
     @Override

@@ -13,8 +13,8 @@ import android.view.ViewGroup;
 
 import javax.inject.Inject;
 
-import io.memetic.alcohdex.App;
 import io.memetic.alcohdex.R;
+import io.memetic.alcohdex.ComponentRegistry;
 import io.memetic.alcohdex.data.EntryRepository;
 import io.memetic.alcohdex.databinding.FragmentAddEntryBinding;
 import io.memetic.alcohdex.feature.entries.model.BeerEntry;
@@ -45,7 +45,7 @@ public class AddEntryFragment extends Fragment {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        ((App) getActivity().getApplication()).getComponentRegistry().repoComponent.inject(this);
+        ComponentRegistry.getInstance().getAppComponent().inject(this);
         super.onCreate(savedInstanceState);
     }
 
@@ -72,6 +72,7 @@ public class AddEntryFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.menuDone:
                 mRepository.addEntry(mEntry);
+                mRepository.commitEntries();
                 getActivity().finish();
                 return true;
             default:
