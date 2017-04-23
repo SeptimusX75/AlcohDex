@@ -15,9 +15,11 @@ import io.memetic.alcohdex.databinding.ListItemBeerEntryBinding;
  */
 public class BeerListEntryBinder extends BaseBindingEpoxyModel {
     private final BeerEntry mEntry;
+    private final Presenter mPresenter;
 
-    public BeerListEntryBinder(BeerEntry entry) {
+    public BeerListEntryBinder(BeerEntry entry, Presenter presenter) {
         mEntry = entry;
+        mPresenter = presenter;
     }
 
     @Override
@@ -27,6 +29,7 @@ public class BeerListEntryBinder extends BaseBindingEpoxyModel {
             binding = DataBindingUtil.bind(view);
         }
         binding.setEntry(mEntry);
+        binding.setPresenter(mPresenter);
         binding.executePendingBindings();
         super.bind(view);
     }
@@ -34,5 +37,9 @@ public class BeerListEntryBinder extends BaseBindingEpoxyModel {
     @Override
     protected int getDefaultLayout() {
         return R.layout.list_item_beer_entry;
+    }
+
+    public interface Presenter {
+        void onEntrySelected(BeerEntry entry);
     }
 }

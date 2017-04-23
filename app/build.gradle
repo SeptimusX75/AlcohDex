@@ -28,17 +28,17 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_ver"
 
     //    Android support libraries
-    compile 'com.android.support:appcompat-v7:25.3.1'
-    compile 'com.android.support:design:25.3.1'
-    compile 'com.android.support:cardview-v7:25.3.1'
+    compile "com.android.support:appcompat-v7:$android_sdk_ver"
+    compile "com.android.support:design:$android_sdk_ver"
+    compile "com.android.support:cardview-v7:$android_sdk_ver"
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
 
     compile 'com.squareup.retrofit2:retrofit:2.2.0'
 
-    compile 'io.reactivex.rxjava2:rxjava:2.0.8'
+    compile 'io.reactivex.rxjava2:rxjava:2.0.9'
     compile 'com.jakewharton.rxrelay2:rxrelay:2.0.0'
     compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
 
@@ -46,17 +46,17 @@ dependencies {
 
     compile 'com.google.code.gson:gson:2.8.0'
 
-    compile 'com.google.dagger:dagger:2.10'
-    annotationProcessor 'com.google.dagger:dagger-compiler:2.10'
+    compile "com.google.dagger:dagger:$dagger_ver"
+    annotationProcessor "com.google.dagger:dagger-compiler:$dagger_ver"
 
-    compile 'com.google.dagger:dagger-android:2.10'
-    compile 'com.google.dagger:dagger-android-support:2.10' // if you use the support libraries
-    annotationProcessor 'com.google.dagger:dagger-android-processor:2.10'
+    compile "com.google.dagger:dagger-android:$dagger_ver"
+    compile "com.google.dagger:dagger-android-support:$dagger_ver"
+    annotationProcessor "com.google.dagger:dagger-android-processor:$dagger_ver"
 
     compile 'com.github.bumptech.glide:glide:3.7.0'
 
-    compile "com.soundcloud.lightcycle:lightcycle-lib:$lightCycleVersion"
-    annotationProcessor "com.soundcloud.lightcycle:lightcycle-processor:$lightCycleVersion"
+    compile "com.soundcloud.lightcycle:lightcycle-lib:$light_cycle_ver"
+    annotationProcessor "com.soundcloud.lightcycle:lightcycle-processor:$light_cycle_ver"
 
     compile 'com.github.hotchemi:permissionsdispatcher:2.3.1'
     annotationProcessor 'com.github.hotchemi:permissionsdispatcher-processor:2.3.1'

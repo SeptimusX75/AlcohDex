@@ -2,6 +2,7 @@ package io.memetic.alcohdex.feature.entries;
 
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.os.ParcelUuid;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -11,10 +12,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.UUID;
+
 import javax.inject.Inject;
 
-import io.memetic.alcohdex.R;
 import io.memetic.alcohdex.ComponentRegistry;
+import io.memetic.alcohdex.R;
 import io.memetic.alcohdex.data.EntryRepository;
 import io.memetic.alcohdex.databinding.FragmentAddEntryBinding;
 import io.memetic.alcohdex.feature.entries.model.BeerEntry;
@@ -30,13 +33,14 @@ public class AddEntryFragment extends Fragment {
     @Inject
     EntryRepository mRepository;
 
-    public static final String KEY_ENTRY = "key_entry";
+    public static final String KEY_ENTRY_ID = "KEY_ENTRY_ID";
     private FragmentAddEntryBinding binding;
     private BeerEntry mEntry;
+    private ParcelUuid mUuid;
 
-    public static AddEntryFragment newInstance(BeerEntry entry) {
+    public static AddEntryFragment newInstance(ParcelUuid uuid) {
         Bundle args = new Bundle();
-        args.putParcelable(KEY_ENTRY, entry);
+        args.putParcelable(KEY_ENTRY_ID, uuid);
 
         AddEntryFragment fragment = new AddEntryFragment();
         fragment.setArguments(args);
@@ -54,7 +58,13 @@ public class AddEntryFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         setHasOptionsMenu(true);
 
-        mEntry = getArguments().getParcelable(KEY_ENTRY);
+        mUuid = getArguments().getParcelable(KEY_ENTRY_ID);
+        if (mUuid != null) {
+            mEntry = mRepository.getEntryById(mUuid.getUuid());
+        }
+        if (mEntry == null) {
+            mEntry = new BeerEntry(UUID.randomUUID());
+        }
 
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_add_entry, container, false);
         binding.setEntry(mEntry);

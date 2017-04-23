@@ -11,14 +11,15 @@
 
         <variable
             name="presenter"
-            type="Object" />
+            type="io.memetic.alcohdex.feature.entries.model.BeerListEntryBinder.Presenter" />
     </data>
 
     <!-- Root layout here -->
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/white"
+        android:background="?attr/selectableItemBackground"
+        android:onClick="@{() -> presenter.onEntrySelected(entry)}"
         android:padding="16dp">
 
         <TextView

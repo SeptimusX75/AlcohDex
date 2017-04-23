@@ -1,6 +1,7 @@
 package io.memetic.alcohdex.data;
 
 import android.content.SharedPreferences;
+import android.support.annotation.Nullable;
 import android.support.v4.util.ArrayMap;
 
 import com.google.gson.Gson;
@@ -40,21 +41,18 @@ public class EntryRepository {
     private static final EntryRepository ourInstance = new EntryRepository();
 
     private static final Type sType;
-    private static final Collection<BeerEntry> entryList;
-    private static final ArrayMap<UUID, BeerEntry> entryMap;
+    private static final ArrayList<BeerEntry> sEntryList;
+    private static final ArrayMap<UUID, BeerEntry> sEntryMap;
 
-    private static final PublishRelay<BeerEntry> mEntryRelay;
-    private static final PublishRelay<Collection<BeerEntry>> mEntryListRelay;
-
+    private static final PublishRelay<BeerEntry> sEntryRelay;
     private static final Observable<BeerEntry> sEntryObservable;
 
     static {
-        entryList = new ArrayList<>();
-        entryMap = new ArrayMap<>();
-        mEntryRelay = PublishRelay.create();
-        mEntryListRelay = PublishRelay.create();
+        sEntryList = new ArrayList<>();
+        sEntryMap = new ArrayMap<>();
+        sEntryRelay = PublishRelay.create();
 
-        sEntryObservable = mEntryRelay.replay().autoConnect(0);
+        sEntryObservable = sEntryRelay.replay().autoConnect(0);
         sType = new TypeToken<ArrayList<BeerEntry>>() {
         }.getType();
     }
@@ -73,30 +71,37 @@ public class EntryRepository {
     }
 
     public void addEntry(BeerEntry beerEntry) {
-        entryList.add(beerEntry);
-        entryMap.put(beerEntry.mUuid.getUuid(), beerEntry);
+        UUID uuid = beerEntry.mUuid.getUuid();
 
-        mEntryRelay.accept(beerEntry);
-        mEntryListRelay.accept(entryList);
+        BeerEntry oldEntry = sEntryMap.put(uuid, beerEntry);
+
+        if (oldEntry == null) {
+            sEntryList.add(beerEntry);
+            sEntryRelay.accept(beerEntry);
+        } else {
+            int i = sEntryList.indexOf(oldEntry);
+            sEntryList.set(i, beerEntry);
+        }
+    }
+
+    @Nullable
+    public BeerEntry getEntryById(UUID uuid) {
+        return sEntryMap.get(uuid);
     }
 
     public Collection<BeerEntry> getEntries() {
-        return entryList;
+        return sEntryList;
     }
 
     public Observable<BeerEntry> getEntryObservable() {
         return sEntryObservable;
     }
 
-    public Observable<Collection<BeerEntry>> getEntryListObservable() {
-        return mEntryListRelay.replay();
-    }
-
     public void commitEntries() {
         ((Runnable) () -> {
             SharedPreferences.Editor editor = mSharedPrefs.edit();
             editor.putString(
-                    KEY_BEER_ENTRIES_LIST, mGson.toJson(entryList, sType));
+                    KEY_BEER_ENTRIES_LIST, mGson.toJson(sEntryList, sType));
             editor.apply();
         }).run();
     }

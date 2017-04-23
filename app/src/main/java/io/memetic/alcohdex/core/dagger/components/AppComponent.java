@@ -7,6 +7,7 @@ import io.memetic.alcohdex.HomeActivity;
 import io.memetic.alcohdex.core.BaseViewModel;
 import io.memetic.alcohdex.core.dagger.modules.AppModule;
 import io.memetic.alcohdex.data.EntryRepository;
+import io.memetic.alcohdex.feature.entries.AddEntryActivity;
 import io.memetic.alcohdex.feature.entries.AddEntryFragment;
 
 /**
@@ -23,6 +24,8 @@ public interface AppComponent {
     void inject(HomeActivity fragment);
 
     void inject(AddEntryFragment fragment);
+
+    void inject(AddEntryActivity activity);
 
     void inject(BaseViewModel viewModel);
 }

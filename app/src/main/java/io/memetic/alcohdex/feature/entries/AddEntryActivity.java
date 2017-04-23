@@ -2,15 +2,13 @@ package io.memetic.alcohdex.feature.entries;
 
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.os.ParcelUuid;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
-import java.util.UUID;
-
 import io.memetic.alcohdex.R;
 import io.memetic.alcohdex.databinding.ActivityAddEntryBinding;
-import io.memetic.alcohdex.feature.entries.model.BeerEntry;
 
 /**
  * TODO class description
@@ -19,8 +17,8 @@ import io.memetic.alcohdex.feature.entries.model.BeerEntry;
  *         3/7/17
  */
 public class AddEntryActivity extends AppCompatActivity {
-
-    public static final String TAG_ADD_ENTRY_FRAGMENT = "TAG_ADD_ENTRY_FRAGMENT";
+    public static final String TAG_ADD_ENTRY_FRAGMENT = "FRAGMENT_TAG_ADD_ENTRY";
+    public static final String EXTRA_ENTRY_ID = AddEntryFragment.KEY_ENTRY_ID;
     private ActivityAddEntryBinding binding;
     private AddEntryFragment fragment;
 
@@ -31,14 +29,17 @@ public class AddEntryActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
+        ParcelUuid uuid = getIntent().getParcelableExtra(EXTRA_ENTRY_ID);
+
         if (savedInstanceState == null) {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            fragment = AddEntryFragment.newInstance(new BeerEntry(UUID.randomUUID()));
+
+            fragment = AddEntryFragment.newInstance(uuid);
             transaction.add(binding.fragmentTarget.getId(), fragment, TAG_ADD_ENTRY_FRAGMENT);
             transaction.commit();
-        }
-        else {
-            fragment = (AddEntryFragment) getSupportFragmentManager().findFragmentByTag(TAG_ADD_ENTRY_FRAGMENT);
+        } else {
+            fragment = (AddEntryFragment) getSupportFragmentManager()
+                    .findFragmentByTag(TAG_ADD_ENTRY_FRAGMENT);
         }
     }
 }

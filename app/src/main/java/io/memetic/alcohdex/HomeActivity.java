@@ -3,6 +3,8 @@ package io.memetic.alcohdex;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.os.ParcelUuid;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -24,6 +26,7 @@ import javax.inject.Inject;
 import io.memetic.alcohdex.data.EntryRepository;
 import io.memetic.alcohdex.databinding.ActivityHomeBinding;
 import io.memetic.alcohdex.feature.entries.AddEntryActivity;
+import io.memetic.alcohdex.feature.entries.model.BeerEntry;
 import io.memetic.alcohdex.feature.entries.model.BeerListEntryBinder;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -33,7 +36,7 @@ import static android.support.v7.widget.DividerItemDecoration.VERTICAL;
 import static io.reactivex.android.schedulers.AndroidSchedulers.mainThread;
 
 public class HomeActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, BeerListEntryBinder.Presenter {
     @Inject
     EntryRepository mRepository;
 
@@ -55,13 +58,8 @@ public class HomeActivity extends AppCompatActivity
 
         FloatingActionButton fab = mBinding.appBarHomeBinding.fab;
         fab.setOnClickListener((view) -> {
-            Intent intent = new Intent(HomeActivity.this, AddEntryActivity.class);
-            startActivity(intent);
+            startAddEntryActivity(null);
         });
-
-        //                Snackbar.make(view, "Replace with your own action",
-        //                        Snackbar.LENGTH_LONG)
-        //                        .setAction("Action", null).show();
 
         DrawerLayout drawer = mBinding.drawerLayout;
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -88,7 +86,7 @@ public class HomeActivity extends AppCompatActivity
         Disposable disposable = mRepository.getEntryObservable().subscribeOn(Schedulers.io())
                 .observeOn(mainThread())
                 .subscribe(beerEntry -> {
-                    mAdapter.addModels(new BeerListEntryBinder(beerEntry));
+                    mAdapter.addModels(new BeerListEntryBinder(beerEntry, this));
                     mAdapter.notifyDataSetChanged();
 
                     mHomeViewModel.setEntryAvailable(!mAdapter.isEmpty());
@@ -163,5 +161,17 @@ public class HomeActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void onEntrySelected(BeerEntry entry) {
+        ParcelUuid uuid = entry.mUuid;
+        startAddEntryActivity(uuid);
+    }
+
+    private void startAddEntryActivity(@Nullable ParcelUuid uuid) {
+        Intent intent = new Intent(HomeActivity.this, AddEntryActivity.class);
+        intent.putExtra(AddEntryActivity.EXTRA_ENTRY_ID, uuid);
+        startActivity(intent);
     }
 }
