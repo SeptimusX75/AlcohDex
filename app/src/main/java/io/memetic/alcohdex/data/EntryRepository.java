@@ -71,7 +71,7 @@ public class EntryRepository {
     }
 
     public void addEntry(BeerEntry beerEntry) {
-        UUID uuid = beerEntry.mUuid.getUuid();
+        UUID uuid = beerEntry.getUuid().getUuid();
 
         BeerEntry oldEntry = sEntryMap.put(uuid, beerEntry);
 

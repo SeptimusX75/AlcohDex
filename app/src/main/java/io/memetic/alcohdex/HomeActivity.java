@@ -165,7 +165,7 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public void onEntrySelected(BeerEntry entry) {
-        ParcelUuid uuid = entry.mUuid;
+        ParcelUuid uuid = entry.getUuid();
         startAddEntryActivity(uuid);
     }
 
