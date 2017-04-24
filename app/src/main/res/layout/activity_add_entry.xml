@@ -15,7 +15,8 @@
     </data>
 
     <!-- Root layout here -->
-    <FrameLayout
+    <ScrollView
+        android:scrollbars="none"
         android:id="@+id/fragmentTarget"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

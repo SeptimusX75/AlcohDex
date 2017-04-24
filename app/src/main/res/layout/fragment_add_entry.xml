@@ -6,12 +6,13 @@
     <data>
 
         <variable
-            name="entry"
-            type="io.memetic.alcohdex.feature.entries.model.BeerEntry" />
+            name="viewModel"
+            type="io.memetic.alcohdex.feature.entries.viewmodel.AddEntryFragmentVm" />
 
         <variable
             name="presenter"
-            type="Object" />
+            type="io.memetic.alcohdex.feature.entries.viewmodel.AddEntryFragmentVm.Presenter" />
+
     </data>
 
     <!-- Root layout here -->
@@ -30,6 +31,8 @@
             android:layout_gravity="center_horizontal"
             android:background="@drawable/border"
             android:contentDescription="@string/beer_image_content_desc"
+            android:foreground="?attr/selectableItemBackground"
+            android:onClick="@{() -> presenter.onImageChangeRequest()}"
             android:src="@drawable/ic_file_upload_black_24dp" />
 
         <android.support.v4.widget.Space
@@ -41,12 +44,12 @@
             android:layout_height="wrap_content">
 
             <EditText
-                android:text="@={entry.name}"
                 android:id="@+id/beerName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/beerNameLabel"
-                android:inputType="textCapWords" />
+                android:inputType="textCapWords"
+                android:text="@={viewModel.entry.name}" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -54,24 +57,32 @@
             android:layout_height="wrap_content">
 
             <EditText
-                android:text="@={entry.brewery}"
                 android:id="@+id/brewery"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/breweryLabel"
-                android:inputType="textCapWords" />
+                android:inputType="textCapWords"
+                android:text="@={viewModel.entry.brewery}" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
+            android:id="@+id/dateTextLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:onClick="@{() -> presenter.onChangeDate(viewModel.dateTuple)}">
 
             <EditText
                 android:id="@+id/dateConsumed"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:cursorVisible="false"
+                android:focusable="false"
                 android:hint="@string/dateLabel"
-                android:inputType="date" />
+                android:inputType="date"
+                android:longClickable="false"
+                android:onClick="@{() -> presenter.onChangeDate(viewModel.dateTuple)}"
+                android:text="@{viewModel.dateText}" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.v4.widget.Space
@@ -84,9 +95,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:numStars="5"
-            android:rating="@={entry.rating}"
+            android:rating="@={viewModel.entry.rating}"
             android:stepSize=".5" />
-
 
     </LinearLayout>
 </layout>

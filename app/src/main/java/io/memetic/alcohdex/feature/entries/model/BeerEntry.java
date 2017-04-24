@@ -5,8 +5,6 @@ import android.net.Uri;
 import android.os.Parcel;
 import android.os.ParcelUuid;
 
-import java.util.UUID;
-
 import io.memetic.alcohdex.BR;
 import io.memetic.alcohdex.core.BaseModel;
 
@@ -17,7 +15,7 @@ import io.memetic.alcohdex.core.BaseModel;
  *         3/7/17
  */
 public class BeerEntry extends BaseModel {
-    public final ParcelUuid mUuid;
+    private ParcelUuid mUuid;
 
     private String mName;
     private String mBrewery;
@@ -25,8 +23,8 @@ public class BeerEntry extends BaseModel {
     private float mRating;
     private long mTimestamp;
 
-    public BeerEntry(UUID mUuid) {
-        this.mUuid = new ParcelUuid(mUuid);
+    @SuppressWarnings("unused")
+    public BeerEntry() {
     }
 
     @SuppressWarnings("WeakerAccess")
@@ -37,6 +35,14 @@ public class BeerEntry extends BaseModel {
         mImageUri = in.readParcelable(Uri.class.getClassLoader());
         mRating = in.readFloat();
         mTimestamp = in.readLong();
+    }
+
+    public ParcelUuid getUuid() {
+        return mUuid;
+    }
+
+    public void setUuid(ParcelUuid uuid) {
+        mUuid = uuid;
     }
 
     @Bindable
