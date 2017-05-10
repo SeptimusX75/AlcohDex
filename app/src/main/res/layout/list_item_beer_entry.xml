@@ -6,8 +6,8 @@
     <data>
 
         <variable
-            name="entry"
-            type="io.memetic.alcohdex.feature.entries.model.BeerEntry" />
+            name="viewModel"
+            type="io.memetic.alcohdex.feature.entries.viewmodel.ListEntryVm" />
 
         <variable
             name="presenter"
@@ -19,7 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/selectableItemBackground"
-        android:onClick="@{() -> presenter.onEntrySelected(entry)}"
+        android:onClick="@{() -> presenter.onEntrySelected(viewModel.entry)}"
         android:padding="16dp">
 
         <TextView
@@ -27,7 +27,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
-            android:text="@{entry.name}"
+            android:text="@{viewModel.name}"
             android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@+id/ratingTextView"
             app:layout_constraintStart_toStartOf="parent"
@@ -39,7 +39,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
-            android:text="@{entry.brewery}"
+            android:text="@{viewModel.brewery}"
             android:textStyle="italic"
             app:layout_constraintEnd_toStartOf="@+id/dateTextView"
             app:layout_constraintStart_toStartOf="@+id/nameTextView"
@@ -50,6 +50,7 @@
             android:id="@+id/ratingTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="@{viewModel.ratingText}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/nameTextView"
             tools:layout_editor_absoluteY="8dp"
@@ -59,6 +60,7 @@
             android:id="@+id/dateTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="@{viewModel.dateText}"
             app:layout_constraintEnd_toEndOf="@+id/ratingTextView"
             app:layout_constraintTop_toTopOf="@+id/breweryTextView"
             tools:text="Dec 12, 2016" />

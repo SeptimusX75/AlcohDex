@@ -6,6 +6,7 @@ import android.view.View;
 import io.memetic.alcohdex.R;
 import io.memetic.alcohdex.core.BaseBindingEpoxyModel;
 import io.memetic.alcohdex.databinding.ListItemBeerEntryBinding;
+import io.memetic.alcohdex.feature.entries.viewmodel.ListEntryVm;
 
 /**
  * TODO class description
@@ -14,11 +15,11 @@ import io.memetic.alcohdex.databinding.ListItemBeerEntryBinding;
  *         4/8/17
  */
 public class BeerListEntryBinder extends BaseBindingEpoxyModel {
-    private final BeerEntry mEntry;
     private final Presenter mPresenter;
+    private final ListEntryVm mViewModel;
 
-    public BeerListEntryBinder(BeerEntry entry, Presenter presenter) {
-        mEntry = entry;
+    public BeerListEntryBinder(ListEntryVm viewModel, Presenter presenter) {
+        mViewModel = viewModel;
         mPresenter = presenter;
     }
 
@@ -28,7 +29,7 @@ public class BeerListEntryBinder extends BaseBindingEpoxyModel {
         if (binding == null) {
             binding = DataBindingUtil.bind(view);
         }
-        binding.setEntry(mEntry);
+        binding.setViewModel(mViewModel);
         binding.setPresenter(mPresenter);
         binding.executePendingBindings();
         super.bind(view);

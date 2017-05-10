@@ -28,6 +28,7 @@ import io.memetic.alcohdex.databinding.ActivityHomeBinding;
 import io.memetic.alcohdex.feature.entries.AddEntryActivity;
 import io.memetic.alcohdex.feature.entries.model.BeerEntry;
 import io.memetic.alcohdex.feature.entries.model.BeerListEntryBinder;
+import io.memetic.alcohdex.feature.entries.viewmodel.ListEntryVm;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
@@ -86,7 +87,8 @@ public class HomeActivity extends AppCompatActivity
         Disposable disposable = mRepository.getEntryObservable().subscribeOn(Schedulers.io())
                 .observeOn(mainThread())
                 .subscribe(beerEntry -> {
-                    mAdapter.addModels(new BeerListEntryBinder(beerEntry, this));
+                    ListEntryVm vm = new ListEntryVm(beerEntry);
+                    mAdapter.addModels(new BeerListEntryBinder(vm, this));
                     mAdapter.notifyDataSetChanged();
 
                     mHomeViewModel.setEntryAvailable(!mAdapter.isEmpty());
