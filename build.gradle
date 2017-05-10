@@ -2,7 +2,8 @@
 
 buildscript {
     ext.android_sdk_ver = '25.3.1'
-    ext.kotlin_ver = '1.1.2-eap-69'
+    ext.gradle_plugin_version = '2.4.0-alpha7'
+    ext.kotlin_ver = '1.1.2-3'
     ext.dagger_ver = '2.10'
     ext.light_cycle_ver = '1.6.1'
     repositories {
@@ -11,7 +12,7 @@ buildscript {
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_ver"
-        classpath 'com.android.tools.build:gradle:2.4.0-alpha7'
+        classpath "com.android.tools.build:gradle:$gradle_plugin_version"
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }

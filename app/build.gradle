@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: "kotlin-kapt"
 
 android {
     compileSdkVersion 25
@@ -30,6 +31,7 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_ver"
 
+    kapt "com.android.databinding:compiler:$gradle_plugin_version"
     //    Android support libraries
     compile "com.android.support:appcompat-v7:$android_sdk_ver"
     compile "com.android.support:design:$android_sdk_ver"
@@ -47,18 +49,18 @@ dependencies {
     compile 'com.google.code.gson:gson:2.8.0'
 
     compile "com.google.dagger:dagger:$dagger_ver"
-    annotationProcessor "com.google.dagger:dagger-compiler:$dagger_ver"
+    kapt "com.google.dagger:dagger-compiler:$dagger_ver"
 
     compile "com.google.dagger:dagger-android:$dagger_ver"
     compile "com.google.dagger:dagger-android-support:$dagger_ver"
-    annotationProcessor "com.google.dagger:dagger-android-processor:$dagger_ver"
+    kapt "com.google.dagger:dagger-android-processor:$dagger_ver"
 
     compile 'com.github.bumptech.glide:glide:3.7.0'
 
     compile "com.soundcloud.lightcycle:lightcycle-lib:$light_cycle_ver"
-    annotationProcessor "com.soundcloud.lightcycle:lightcycle-processor:$light_cycle_ver"
+    kapt "com.soundcloud.lightcycle:lightcycle-processor:$light_cycle_ver"
 
     compile 'com.github.hotchemi:permissionsdispatcher:2.3.1'
-    annotationProcessor 'com.github.hotchemi:permissionsdispatcher-processor:2.3.1'
+    kapt 'com.github.hotchemi:permissionsdispatcher-processor:2.3.1'
     testCompile 'junit:junit:4.12'
 }
