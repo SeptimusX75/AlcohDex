@@ -8,12 +8,11 @@ import io.memetic.alcohdex.core.interfaces.ViewModel
 import javax.inject.Inject
 
 abstract class BaseViewModel : BaseObservable(), ViewModel {
-    @Inject
-    var context: Context? = null
-        internal set
-    @Inject
-    var resources: Resources? = null
-        internal set
+    lateinit var context: Context
+        @Inject internal set
+
+    lateinit var resources: Resources
+        @Inject internal set
 
     init {
         ComponentRegistry.getInstance().appComponent.inject(this)
