@@ -8,12 +8,12 @@ buildscript {
     ext.dagger_ver = '2.10'
     ext.light_cycle_ver = '1.6.1'
     repositories {
-        maven { url 'https://dl.bintray.com/kotlin/kotlin-eap-1.1' }
+        maven { url 'https://maven.google.com' }
         jcenter()
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_ver"
-        classpath "com.android.tools.build:gradle:$gradle_plugin_version"
+        classpath 'com.android.tools.build:gradle:3.0.0-alpha1'
         classpath "io.realm:realm-gradle-plugin:$realm_gradle_plugin_ver"
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -22,7 +22,6 @@ buildscript {
 
 allprojects {
     repositories {
-        maven { url 'https://dl.bintray.com/kotlin/kotlin-eap-1.1' }
         jcenter()
         mavenCentral()
     }

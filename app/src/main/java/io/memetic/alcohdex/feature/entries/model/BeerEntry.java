@@ -2,7 +2,6 @@ package io.memetic.alcohdex.feature.entries.model;
 
 import android.databinding.Bindable;
 import android.net.Uri;
-import android.os.Parcel;
 import android.os.ParcelUuid;
 
 import io.memetic.alcohdex.BR;
@@ -22,21 +21,7 @@ public class BeerEntry extends BaseModel {
     private Uri mImageUri;
     private float mRating;
     private long mTimestamp;
-
-    @SuppressWarnings("unused")
-    public BeerEntry() {
-    }
-
-    @SuppressWarnings("WeakerAccess")
-    protected BeerEntry(Parcel in) {
-        mUuid = in.readParcelable(ParcelUuid.class.getClassLoader());
-        mName = in.readString();
-        mBrewery = in.readString();
-        mImageUri = in.readParcelable(Uri.class.getClassLoader());
-        mRating = in.readFloat();
-        mTimestamp = in.readLong();
-    }
-
+    
     public ParcelUuid getUuid() {
         return mUuid;
     }
@@ -93,32 +78,5 @@ public class BeerEntry extends BaseModel {
     public void setTimestamp(long timestamp) {
         this.mTimestamp = timestamp;
         notifyPropertyChanged(BR.timestamp);
-    }
-
-    public static final Creator<BeerEntry> CREATOR = new Creator<BeerEntry>() {
-        @Override
-        public BeerEntry createFromParcel(Parcel in) {
-            return new BeerEntry(in);
-        }
-
-        @Override
-        public BeerEntry[] newArray(int size) {
-            return new BeerEntry[size];
-        }
-    };
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeParcelable(mUuid, flags);
-        dest.writeString(mName);
-        dest.writeString(mBrewery);
-        dest.writeParcelable(mImageUri, flags);
-        dest.writeFloat(mRating);
-        dest.writeLong(mTimestamp);
     }
 }

@@ -14,7 +14,7 @@ class ListEntryVm(val entry: BeerEntry) : BaseViewModel() {
 
     val name: String
         @Bindable
-        get() = entry.brewery
+        get() = entry.name
 
     val brewery: String
         @Bindable
