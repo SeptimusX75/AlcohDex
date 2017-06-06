@@ -1,6 +1,7 @@
 package io.memetic.alcohdex.data;
 
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.support.v4.util.ArrayMap;
 
@@ -10,6 +11,7 @@ import com.jakewharton.rxrelay2.PublishRelay;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.UUID;
 
@@ -20,7 +22,9 @@ import dagger.Module;
 import dagger.Provides;
 import io.memetic.alcohdex.ComponentRegistry;
 import io.memetic.alcohdex.feature.entries.model.BeerEntry;
+import io.memetic.alcohdex.feature.entries.realm.RealmBeerEntry;
 import io.reactivex.Observable;
+import io.realm.Realm;
 
 /**
  * TODO class description
@@ -71,17 +75,26 @@ public class EntryRepository {
     }
 
     public void addEntry(BeerEntry beerEntry) {
+
         UUID uuid = beerEntry.getUuid().getUuid();
 
-        BeerEntry oldEntry = sEntryMap.put(uuid, beerEntry);
+        RealmBeerEntry realmEntry = new RealmBeerEntry();
+        realmEntry.setId(uuid.toString());
+        realmEntry.setName(beerEntry.getName());
+        realmEntry.setBrewery(beerEntry.getBrewery());
+        realmEntry.setRating(beerEntry.getRating());
 
-        if (oldEntry == null) {
-            sEntryList.add(beerEntry);
-            sEntryRelay.accept(beerEntry);
-        } else {
-            int i = sEntryList.indexOf(oldEntry);
-            sEntryList.set(i, beerEntry);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(beerEntry.getTimestamp());
+        realmEntry.setDate(calendar.getTime());
+
+        Uri uri = beerEntry.getImageUri();
+        if (uri != null) {
+            realmEntry.setImageUri(uri.toString());
         }
+
+        Realm realm = Realm.getDefaultInstance();
+        realm.executeTransaction(it -> realm.copyToRealm(realmEntry));
     }
 
     @Nullable
@@ -95,30 +108,5 @@ public class EntryRepository {
 
     public Observable<BeerEntry> getEntryObservable() {
         return sEntryObservable;
-    }
-
-    public void commitEntries() {
-        ((Runnable) () -> {
-            SharedPreferences.Editor editor = mSharedPrefs.edit();
-            editor.putString(
-                    KEY_BEER_ENTRIES_LIST, mGson.toJson(sEntryList, sType));
-            editor.apply();
-        }).run();
-    }
-
-    public void loadEntries() {
-        ((Runnable) () -> {
-            String jsonString = mSharedPrefs.getString(KEY_BEER_ENTRIES_LIST, null);
-            Collection<BeerEntry> storedEntries = mGson.fromJson(
-                    jsonString,
-                    sType
-            );
-            if (storedEntries == null) {
-                return;
-            }
-            for (BeerEntry entry : storedEntries) {
-                addEntry(entry);
-            }
-        }).run();
     }
 }

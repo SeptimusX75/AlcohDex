@@ -12,8 +12,7 @@ import java.util.*
  * *         5/22/17
  */
 open class RealmBeerEntry : RealmObject() {
-    @Required @PrimaryKey
-    var id: String? = null
+    @Required @PrimaryKey var id: String? = null
     var name: String? = null
     var brewery: String? = null
     var imageUri: String? = null

@@ -4,7 +4,8 @@ import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
 
-import io.memetic.alcohdex.data.EntryRepository;
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
 
 /**
  * TODO class description
@@ -19,7 +20,9 @@ public class App extends Application implements Application.ActivityLifecycleCal
         super.onCreate();
         ComponentRegistry.getInstance().initialize(this);
         registerActivityLifecycleCallbacks(this);
-        EntryRepository.getInstance().loadEntries();
+        Realm.init(this);
+        RealmConfiguration configuration = new RealmConfiguration.Builder().build();
+        Realm.setDefaultConfiguration(configuration);
     }
 
     @Override

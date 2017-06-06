@@ -28,29 +28,32 @@ import io.memetic.alcohdex.databinding.ActivityHomeBinding;
 import io.memetic.alcohdex.feature.entries.AddEntryActivity;
 import io.memetic.alcohdex.feature.entries.model.BeerEntry;
 import io.memetic.alcohdex.feature.entries.model.BeerListEntryBinder;
+import io.memetic.alcohdex.feature.entries.realm.RealmBeerEntry;
 import io.memetic.alcohdex.feature.entries.viewmodel.ListEntryVm;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
+import io.realm.OrderedCollectionChangeSet;
+import io.realm.Realm;
+import io.realm.RealmResults;
 
 import static android.support.v7.widget.DividerItemDecoration.VERTICAL;
-import static io.reactivex.android.schedulers.AndroidSchedulers.mainThread;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, BeerListEntryBinder.Presenter {
     @Inject
     EntryRepository mRepository;
 
-    private CompositeDisposable mCompositeDisposable = new CompositeDisposable();
     private RecyclerView mRecyclerView;
     private SimpleEpoxyAdapter mAdapter;
     private ActivityHomeBinding mBinding;
     private TextView mEmptyListTextView;
     private HomeViewModel mHomeViewModel;
+    private Realm mRealm;
+    private RealmResults<RealmBeerEntry> mEntries;
+    private ActionBarDrawerToggle mDrawerToggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         mHomeViewModel = new HomeViewModel();
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_home);
         mBinding.setViewModel(mHomeViewModel);
@@ -58,16 +61,14 @@ public class HomeActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = mBinding.appBarHomeBinding.fab;
-        fab.setOnClickListener((view) -> {
-            startAddEntryActivity(null);
-        });
+        fab.setOnClickListener((view) -> startAddEntryActivity(null));
 
         DrawerLayout drawer = mBinding.drawerLayout;
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+        mDrawerToggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open,
                 R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
+        drawer.addDrawerListener(mDrawerToggle);
+        mDrawerToggle.syncState();
 
         NavigationView navigationView = mBinding.navView;
         navigationView.setNavigationItemSelectedListener(this);
@@ -84,28 +85,41 @@ public class HomeActivity extends AppCompatActivity
         mEmptyListTextView = mBinding.appBarHomeBinding.contentHomeBinding.emptyListTextView;
         ComponentRegistry.getInstance().getAppComponent().inject(this);
 
-        Disposable disposable = mRepository.getEntryObservable().subscribeOn(Schedulers.io())
-                .observeOn(mainThread())
-                .subscribe(beerEntry -> {
-                    ListEntryVm vm = new ListEntryVm(beerEntry);
-                    mAdapter.addModels(new BeerListEntryBinder(vm, this));
-                    mAdapter.notifyDataSetChanged();
+        mRealm = Realm.getDefaultInstance();
+        mEntries = mRealm.where(RealmBeerEntry.class).findAllAsync();
+        mEntries.addChangeListener(this::updateAdapter);
+    }
 
-                    mHomeViewModel.setEntryAvailable(!mAdapter.isEmpty());
-                });
-        mCompositeDisposable.add(disposable);
+    private void updateAdapter(RealmResults<RealmBeerEntry> entries, OrderedCollectionChangeSet changeSet) {
+        if (changeSet == null) {
+            for (RealmBeerEntry entry : entries) {
+                addEntryToAdapter(entry);
+            }
+        } else {
+            for (int i : changeSet.getInsertions()) {
+                addEntryToAdapter(entries.get(i));
+            }
+        }
+        mHomeViewModel.setEntryAvailable(!mEntries.isEmpty());
+    }
+
+    private void addEntryToAdapter(RealmBeerEntry entry) {
+        BeerEntry beerEntry = new BeerEntry();
+        beerEntry.setUuid(ParcelUuid.fromString(entry.getId()));
+        beerEntry.setName(entry.getName());
+        beerEntry.setBrewery(entry.getBrewery());
+        beerEntry.setRating(entry.getRating());
+        beerEntry.setTimestamp(entry.getDate().getTime());
+
+        ListEntryVm vm = new ListEntryVm(beerEntry);
+        mAdapter.addModels(new BeerListEntryBinder(vm, this));
     }
 
     @Override
     protected void onDestroy() {
-        mCompositeDisposable.dispose();
+        mBinding.drawerLayout.removeDrawerListener(mDrawerToggle);
+        mRealm.close();
         super.onDestroy();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        mHomeViewModel.setEntryAvailable(!mRepository.getEntries().isEmpty());
     }
 
     @Override

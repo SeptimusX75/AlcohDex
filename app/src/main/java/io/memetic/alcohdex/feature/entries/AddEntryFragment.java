@@ -95,7 +95,6 @@ public class AddEntryFragment extends Fragment implements Presenter {
         switch (item.getItemId()) {
             case R.id.menuDone:
                 mRepository.addEntry(mEntry);
-                mRepository.commitEntries();
                 getActivity().finish();
                 return true;
             default:
@@ -119,6 +118,5 @@ public class AddEntryFragment extends Fragment implements Presenter {
                 dateTuple.year, dateTuple.month, dateTuple.day
         );
         dateDialog.show();
-
     }
 }

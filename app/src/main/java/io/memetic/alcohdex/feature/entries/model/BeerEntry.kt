@@ -13,7 +13,7 @@ import io.memetic.alcohdex.core.BaseModel
  * *         3/7/17
  */
 class BeerEntry : BaseModel() {
-    var uuid: ParcelUuid? = null
+    lateinit var uuid: ParcelUuid
 
     @get:Bindable
     var name: String? = null
