@@ -2,17 +2,12 @@ package io.memetic.alcohdex.data;
 
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.support.annotation.Nullable;
-import android.support.v4.util.ArrayMap;
+import android.os.ParcelUuid;
+import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.jakewharton.rxrelay2.PublishRelay;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.UUID;
 
 import javax.inject.Inject;
@@ -23,7 +18,6 @@ import dagger.Provides;
 import io.memetic.alcohdex.ComponentRegistry;
 import io.memetic.alcohdex.feature.entries.model.BeerEntry;
 import io.memetic.alcohdex.feature.entries.realm.RealmBeerEntry;
-import io.reactivex.Observable;
 import io.realm.Realm;
 
 /**
@@ -35,32 +29,12 @@ import io.realm.Realm;
 @Module
 public class EntryRepository {
 
-    public static final String KEY_BEER_ENTRIES_LIST = "key_beer_entries_list";
-
     @Inject
     SharedPreferences mSharedPrefs;
     @Inject
     Gson mGson;
 
     private static final EntryRepository ourInstance = new EntryRepository();
-
-    private static final Type sType;
-    private static final ArrayList<BeerEntry> sEntryList;
-    private static final ArrayMap<UUID, BeerEntry> sEntryMap;
-
-    private static final PublishRelay<BeerEntry> sEntryRelay;
-    private static final Observable<BeerEntry> sEntryObservable;
-
-    static {
-        sEntryList = new ArrayList<>();
-        sEntryMap = new ArrayMap<>();
-        sEntryRelay = PublishRelay.create();
-
-        sEntryObservable = sEntryRelay.replay().autoConnect(0);
-        sType = new TypeToken<ArrayList<BeerEntry>>() {
-        }.getType();
-    }
-
     {
         ComponentRegistry.getInstance().getAppComponent().inject(this);
     }
@@ -74,39 +48,44 @@ public class EntryRepository {
     private EntryRepository() {
     }
 
-    public void addEntry(BeerEntry beerEntry) {
+    public void addEntry(Realm realm, BeerEntry beerEntry) {
+        realm.executeTransactionAsync(it ->
+                it.copyToRealmOrUpdate(createFromEntry(beerEntry))
+        );
+    }
 
+    @NonNull
+    private RealmBeerEntry createFromEntry(BeerEntry beerEntry) {
         UUID uuid = beerEntry.getUuid().getUuid();
-
+        Uri uri = beerEntry.getImageUri();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(beerEntry.getTimestamp());
         RealmBeerEntry realmEntry = new RealmBeerEntry();
         realmEntry.setId(uuid.toString());
         realmEntry.setName(beerEntry.getName());
         realmEntry.setBrewery(beerEntry.getBrewery());
         realmEntry.setRating(beerEntry.getRating());
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(beerEntry.getTimestamp());
         realmEntry.setDate(calendar.getTime());
-
-        Uri uri = beerEntry.getImageUri();
         if (uri != null) {
             realmEntry.setImageUri(uri.toString());
         }
-
-        Realm realm = Realm.getDefaultInstance();
-        realm.executeTransaction(it -> realm.copyToRealm(realmEntry));
+        return realmEntry;
     }
 
-    @Nullable
-    public BeerEntry getEntryById(UUID uuid) {
-        return sEntryMap.get(uuid);
+    public BeerEntry getBeerEntryForKey(Realm realm, UUID uuid) {
+        RealmBeerEntry entry = realm.where(RealmBeerEntry.class)
+                .equalTo(RealmBeerEntry.primaryKey, uuid.toString()).findFirst();
+        return createFromRealmEntry(entry);
     }
 
-    public Collection<BeerEntry> getEntries() {
-        return sEntryList;
-    }
-
-    public Observable<BeerEntry> getEntryObservable() {
-        return sEntryObservable;
+    @NonNull
+    private BeerEntry createFromRealmEntry(RealmBeerEntry entry) {
+        BeerEntry beerEntry = new BeerEntry();
+        beerEntry.setUuid(ParcelUuid.fromString(entry.getId()));
+        beerEntry.setName(entry.getName());
+        beerEntry.setBrewery(entry.getBrewery());
+        beerEntry.setRating(entry.getRating());
+        beerEntry.setTimestamp(entry.getDate().getTime());
+        return beerEntry;
     }
 }

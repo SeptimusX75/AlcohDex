@@ -86,7 +86,7 @@ public class HomeActivity extends AppCompatActivity
         ComponentRegistry.getInstance().getAppComponent().inject(this);
 
         mRealm = Realm.getDefaultInstance();
-        mEntries = mRealm.where(RealmBeerEntry.class).findAllAsync();
+        mEntries = mRealm.where(RealmBeerEntry.class).findAllSortedAsync(RealmBeerEntry.dateField);
         mEntries.addChangeListener(this::updateAdapter);
     }
 
@@ -96,8 +96,13 @@ public class HomeActivity extends AppCompatActivity
                 addEntryToAdapter(entry);
             }
         } else {
-            for (int i : changeSet.getInsertions()) {
-                addEntryToAdapter(entries.get(i));
+            for (int i : changeSet.getChanges()) {
+                RealmBeerEntry entry = entries.get(i);
+                if (entry.isValid()) {
+                    addEntryToAdapter(entry);
+                } else {
+                    mAdapter.removeModel(mAdapter.getModels().get(i));
+                }
             }
         }
         mHomeViewModel.setEntryAvailable(!mEntries.isEmpty());

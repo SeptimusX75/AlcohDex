@@ -25,6 +25,7 @@ import io.memetic.alcohdex.data.EntryRepository;
 import io.memetic.alcohdex.databinding.FragmentAddEntryBinding;
 import io.memetic.alcohdex.feature.entries.model.BeerEntry;
 import io.memetic.alcohdex.feature.entries.viewmodel.AddEntryFragmentVm;
+import io.realm.Realm;
 
 import static io.memetic.alcohdex.feature.entries.viewmodel.AddEntryFragmentVm.DateTuple;
 import static io.memetic.alcohdex.feature.entries.viewmodel.AddEntryFragmentVm.Presenter;
@@ -45,6 +46,7 @@ public class AddEntryFragment extends Fragment implements Presenter {
     private BeerEntry mEntry;
     private ParcelUuid mUuid;
     private AddEntryFragmentVm mViewModel;
+    private Realm mRealm;
 
     public static AddEntryFragment newInstance(ParcelUuid uuid) {
         Bundle args = new Bundle();
@@ -58,7 +60,14 @@ public class AddEntryFragment extends Fragment implements Presenter {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         ComponentRegistry.getInstance().getAppComponent().inject(this);
+        mRealm = Realm.getDefaultInstance();
         super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mRealm.close();
     }
 
     @Nullable
@@ -69,7 +78,7 @@ public class AddEntryFragment extends Fragment implements Presenter {
 
         mUuid = getArguments().getParcelable(KEY_ENTRY_ID);
         if (mUuid != null) {
-            mEntry = mRepository.getEntryById(mUuid.getUuid());
+            mEntry = EntryRepository.getInstance().getBeerEntryForKey(mRealm, mUuid.getUuid());
         }
         Calendar calendar = Calendar.getInstance();
         if (mEntry == null) {
@@ -94,7 +103,7 @@ public class AddEntryFragment extends Fragment implements Presenter {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menuDone:
-                mRepository.addEntry(mEntry);
+                mRepository.addEntry(mRealm, mEntry);
                 getActivity().finish();
                 return true;
             default:
