@@ -57,6 +57,7 @@ public class HomeActivity extends AppCompatActivity
         mHomeViewModel = new HomeViewModel();
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_home);
         mBinding.setViewModel(mHomeViewModel);
+        mBinding.appBarHomeBinding.contentHomeBinding.swipeRefreshLayout.setEnabled(false);
         Toolbar toolbar = mBinding.appBarHomeBinding.toolbar;
         setSupportActionBar(toolbar);
 
